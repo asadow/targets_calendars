@@ -1,0 +1,10 @@
+### Year: `r y`
+
+```{r include = FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+```
+
+```{r}
+df |> filter(year == y) |> pull(calendar) |> pluck(1)
+```
