@@ -8,6 +8,7 @@ library(conflicted)
 conflict_prefer("filter", "dplyr")
 conflict_prefer("lag", "dplyr")
 library(targets)
+library(tarchetypes)
 library(crew)
 library(crew.cluster)
 library(tarchetypes)
@@ -24,7 +25,8 @@ library(qs)
 tar_option_set(
   storage = "worker",
   retrieval = "worker",
-  packages = c("employer", "janitor", "conflicted", "here", "ggpubr",
+  packages = c("employer", "tarchetypes", "janitor",
+               "conflicted", "here", "ggpubr",
                "tidyverse", "glue", "here", "targets", "DT", "qs"),
   imports = "employer",
   controller = crew_controller_local(workers = 1),
@@ -46,28 +48,30 @@ tar_source()
 
 # Replace the target list below with your own:
 list(
+  tar_file(absent_file, "data/absent"),
+  tar_target(absent, qs::qread(absent_file)),
+  tar_group_by(
+    absent_grouped,
+    absent,
+    employee_no,
+  ),
+  tar_target(
+    active_employees,
+    absent_grouped$employee_no |> unique()
+  ),
   tar_target(
     calendars,
-    calendar_df |>
+    absent_grouped |>
       calendar_nested(
         nest_by = employee_no,
         event = tr_code
       ),
-    pattern = map(calendar_df)
+    pattern = map(absent_grouped)
   ),
-  tar_target(
-    calendars,
-    calendar_df |>
-      calendar_nested(
-        nest_by = employee_no,
-        event = tr_code
-      ),
-    pattern = map(calendar_df)
-  ),
-  
   tar_render_rep(
     reports_calendars,
-    "Rmd/calendar.Rmd",
+    # Why do I need here()?
+    here::here("Rmd/calendar.Rmd"),
     params = tibble(
       branch = 1:length(active_employees)
     )
