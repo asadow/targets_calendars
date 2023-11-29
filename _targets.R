@@ -29,7 +29,7 @@ tar_option_set(
                "conflicted", "here", "ggpubr",
                "tidyverse", "glue", "here", "targets", "DT", "qs"),
   imports = "employer",
-  controller = crew_controller_local(workers = 1),
+  controller = crew_controller_local(workers = 6),
   memory = "transient",
   garbage_collection = TRUE,
   format = "qs"
@@ -70,6 +70,7 @@ list(
   ),
   tar_render_rep(
     reports_calendars,
+    retrieval = "none",
     # Why do I need here()?
     here::here("Rmd/calendar.Rmd"),
     params = tibble(
