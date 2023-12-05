@@ -1,7 +1,5 @@
 ---
 title: "HR Transactions: Sick Calendars"
-params:
-  branch: 1
 output:
   html_document:
     self_contained: true
@@ -23,13 +21,7 @@ library(glue)
 library(targets)
 ```
 
-```{r}
-#| label: filter-employee_get-years
-store <- here::here("_targets")
-tar_load(calendars, store = store, branches = params$branch)
-```
-
-## Employee: `r calendars$employee_no` {.tabset .tabset-pills}
+## Employee: `r calendars$employee_no[1]` {.tabset .tabset-pills}
 
 ::: {.panel-tabset .column-screen-inset}
 ```{r}
@@ -41,7 +33,7 @@ year_reports <- lapply(
   calendars$year |> unique(),
   function(y) {
     knitr::knit_child(
-      here::here("Rmd", "calendar_child.Rmd"),
+      here::here("Rmd/calendar_child.Rmd"),
       envir = environment(),
       quiet = TRUE
       )

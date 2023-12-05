@@ -6,5 +6,5 @@ knitr::opts_chunk$set(echo = FALSE)
 ```
 
 ```{r}
-df |> filter(year == y) |> pull(calendar) |> pluck(1)
+calendars |> filter(year == y) |> pull(calendar) |> pluck(1)
 ```

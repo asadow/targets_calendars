@@ -29,7 +29,7 @@ tar_option_set(
                "conflicted", "here", "ggpubr",
                "tidyverse", "glue", "here", "targets", "DT", "qs"),
   imports = "employer",
-  controller = crew_controller_local(workers = 6),
+  controller = crew_controller_local(workers = 4),
   memory = "transient",
   garbage_collection = TRUE,
   format = "qs"
@@ -43,7 +43,7 @@ options(clustermq.scheduler = "multiprocess")
 # Install packages {{future}}, {{future.callr}}, and {{future.batchtools}} to allow use_targets() to configure tar_make_future() options.
 
 # Run the R scripts in the R/ folder with your custom functions:
-tar_source()
+# tar_source()
 # source("other_functions.R") # Source other scripts as needed.
 
 # Replace the target list below with your own:
@@ -68,13 +68,12 @@ list(
       ),
     pattern = map(absent_grouped)
   ),
-  tar_render_rep(
+  tar_target(
     reports_calendars,
-    retrieval = "none",
-    # Why do I need here()?
-    here::here("Rmd/calendar.Rmd"),
-    params = tibble(
-      branch = 1:length(active_employees)
-    )
+    command = rmarkdown::render(
+      here::here("Rmd/calendar.Rmd"),
+      output_file = paste0(calendars$employee_no[1], ".html")
+    ),
+    pattern = map(calendars)
   )
 )
